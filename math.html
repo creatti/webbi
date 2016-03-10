@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="utf-8">
+
+<title>Kertotauluohjelma</title>
+<style>
+#container 
+{
+	background-color:#87cefa;
+	margin:auto;
+	width:800px;
+	height:550px;
+	border:double #8B4513;
+}
+#header
+{
+	float: left;
+	color:#6E4E04;
+	margin-top:5px;
+	margin-left:5px;
+	padding:5px;
+}	
+#laskut {
+	float: none;
+	padding: 5px;
+	margin-top: 5px;		
+	background-color: #87cefa;
+	width: 150px;
+}
+
+#napit {
+	clear: both;
+	padding: 5px;
+	margin-top: 5px;
+}
+
+#palaute {
+	float:left;
+	
+}
+
+#laskenta {
+	float:left;
+	border: solid white;
+	padding: 5px;
+	margin-top: 5px;		
+	margin-left: 10px;
+}
+table {
+	width: 150px;	
+}
+
+
+table td > div {
+    overflow: hidden;
+}
+
+td.oikea {
+	text-align:right;
+}
+
+td.keski {
+	text-align:right;
+}
+
+ul
+{
+	list-style-type:none;
+	margin:0;
+	padding:0;
+} 
+
+input[type=range] {
+    background-color: #FFF8DC;
+    width: 200px;
+    height:20px;
+}
+
+</style>
+<script>
+
+function kysymykset(id)
+{
+	var lkm = document.getElementById(id).value;
+	if (lkm>15)
+	{
+		alert("Liian monta laskua! Anna max. 15");
+		return false;
+	}
+	
+	var i, html="", a=0, b=0, tulos=0, taso=0, maksimi=0;
+	taso=parseInt(document.getElementById("vaikeus").value);
+	if (taso==1)
+		maksimi=3;
+	else if (taso==2)
+		maksimi=5;
+	else if (taso==3)
+		maksimi=7;
+	else if (taso==4)
+		maksimi=10;
+	else
+		maksimi=Math.floor((6+taso) + (taso/2));
+	console.log("Maksimi: " + maksimi);
+	document.getElementById("palaute").innerHTML='';
+	html ='<table>';
+	for (i=1; i<=lkm; i++)	
+	{	
+		a = Math.floor((Math.random()*maksimi))+1;
+		b = Math.floor((Math.random()*maksimi))+1;
+		tulos = a*b;
+		html=html + '<tr><td class="oikea"><div>' + a + '</div></td><td class="keski"><div>*</div></td><td class="oikea"><div>' + b+ '</div></td>'; 		
+		html=html + '<td class="keski"><input type = "text" id="v' + i +'" size="3">';
+		html=html + '<input type = "hidden" id="t' + i +'" value="'+tulos+'"></td><td id="p'+i+'"></td><td id="o'+i+'"></td></tr>';		
+	}
+	html = html + '</table>';	
+	document.getElementById("laskut").innerHTML=html;
+	html = '<button onclick="tarkista('+lkm+')">Tarkista</button>';
+	html = html + '<button onclick="kysymykset('+"'montako'"+')">Uudelleen</button>';
+	html = html + '<button onclick="oikeat('+lkm+')">Näytä oikeat</button>';
+	document.getElementById("napit").innerHTML=html;
+	return true;
+}
+
+function tarkista(lkm)
+{
+	var oikein=0, vastaus=0, tulos=0;
+	for (i=1; i<=lkm; i++)	
+	{	
+		vastaus = document.getElementById("v" + i).value;
+		tulos = document.getElementById("t" + i).value;
+		if (vastaus == tulos)
+		{	
+			document.getElementById("p" + i).innerHTML='Oikein, hyvä!';
+			oikein ++;
+		}
+		else
+		{
+			document.getElementById("p" + i).style.color='red';
+			document.getElementById("p" + i).innerHTML='Väärin meni';
+		}
+	}
+	document.getElementById("palaute").innerHTML='Sait ' + oikein + '/' + lkm + ' oikein!';
+}
+
+function oikeat(lkm)
+{
+	for (i=1; i<=lkm; i++)	
+	{	
+		document.getElementById("o" + i).innerHTML=document.getElementById("t" + i).value;
+	}
+}
+
+function naytaVaikeus(id)
+{
+	var input = document.getElementById("vaikeus");
+	document.getElementById("taso").innerHTML=input.value;
+	console.log(document.getElementById("taso").innerHTML=input.value);
+}
+
+</script>
+
+</head>
+<body onload="kysymykset('montako')">
+<div id="container">
+<div id="header">
+<h2>Tervetuloa laskemaan!</h2>
+<table>
+<tr><td>Montako laskua:</td><td> <input type="text" id="montako" size="2" value="5"></td></tr>
+<tr><td>Anna vaikeustaso:</td> 
+	<td><label id="taso">1</label></td><td><input type="range" id="vaikeus" min="1" max="9" value="1" onmousemove="naytaVaikeus(this.value);"></td></tr>
+	
+</table>
+
+<button onclick="kysymykset('montako')">OK</button>
+</div>
+<div id="laskenta">
+<div id="laskut"></div>
+<div><label id="palaute"></label></div>
+<div id="napit"></div>
+</div>
+</div>
+</body>
+</html>
